@@ -24,18 +24,40 @@ const puppeteer = require('puppeteer');
       await page.waitFor(1500);
       await page.click(`a[href='/${process.env.IG_ID}/']`);
       await page.waitFor('.-nal3', {delay: 20});
+      let followingCount = await page.evaluate(() => {
+          const headerTabs = document.getElementsByClassName("-nal3");
+          return parseInt(headerTabs[2].innerText.split(" ")[0])
+      })
+      let followersCount = await page.evaluate(() => {
+        const headerTabs = document.getElementsByClassName("-nal3");
+        return parseInt(headerTabs[1].innerText.split(" ")[0]);
+      });
+
       await page.evaluate(() => {
           const headerTabs = document.getElementsByClassName('-nal3');
           headerTabs[2].click()
       })
       await page.waitFor(5000);
-      await scrollToEnd(page, 39);
+
+      await scrollToEnd(page, followingCount);
       const myFollowing = await page.evaluate(() => {
           const scrollable_div = document.getElementsByClassName("PZuss")[0]
           const followingList = scrollable_div.children
           const followingListArr = [...followingList].map(liElement => liElement.innerText.split(/(\r\n|\n|\r)/gm)[0]);
           return followingListArr
       });
+
+      await page.evaluate(() => {
+          document.getElementsByClassName('wpO6b')[1].click()
+        });
+
+      await page.evaluate(() => {
+        const headerTabs = document.getElementsByClassName("-nal3");
+        headerTabs[1].click();
+      });
+      await page.waitFor(5000);
+      
+      await scrollToEnd(page, followersCount)
       const myFollowers = await page.evaluate(() => {
         const scrollable_div = document.getElementsByClassName("PZuss")[0];
         const followersList = scrollable_div.children;
@@ -45,7 +67,7 @@ const puppeteer = require('puppeteer');
         return followersListArr;
       });
       console.log('MY FOLLOWERS', myFollowing);
-      console.log('I AM FOLLOWING', myFollowing);
+      console.log('I AM FOLLOWING', myFollowers);
   } catch (err) {
       console.error(err.message);
   } finally {
