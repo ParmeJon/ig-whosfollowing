@@ -40,7 +40,7 @@ const puppeteer = require('puppeteer');
       await page.waitFor(5000);
 
       await scrollToEnd(page, followingCount);
-      const myFollowing = await page.evaluate(() => {
+      const iAmFollowing = await page.evaluate(() => {
           const scrollable_div = document.getElementsByClassName("PZuss")[0]
           const followingList = scrollable_div.children
           const followingListArr = [...followingList].map(liElement => liElement.innerText.split(/(\r\n|\n|\r)/gm)[0]);
@@ -66,8 +66,12 @@ const puppeteer = require('puppeteer');
         );
         return followersListArr;
       });
-      console.log('MY FOLLOWERS', myFollowing);
-      console.log('I AM FOLLOWING', myFollowers);
+    //   console.log('MY FOLLOWERS: ', myFollowers);
+    //   console.log('I AM FOLLOWING: ', iAmFollowing)
+      let notFollowingBack = notFollowingMeBack(iAmFollowing, myFollowers);
+
+      console.log('Number of people not following me back', notFollowingBack.length)
+      console.log('NOT FOLLOWING ME BACK: ', notFollowingBack)
   } catch (err) {
       console.error(err.message);
   } finally {
@@ -85,9 +89,26 @@ async function scrollToEnd(page, numberOfItems) {
                 scrollable_div.scrollIntoView({ block: "end" });
                 return document.getElementsByClassName("PZuss")[0].children.length
             })
-            await page.waitFor(2000);
+            await page.waitFor(3000);
         }
     } catch(err) {
         console.error(err)
     }
+}
+
+function notFollowingMeBack(iAmFollowing, myFollowers) {
+    let iAmFollowingObject = {};
+    let notFollowingMeBack
+    iAmFollowing.forEach(following => {
+    iAmFollowingObject[following] = false;
+    });
+    myFollowers.forEach(follower => {
+        if(iAmFollowingObject[follower] !== undefined) {
+            iAmFollowingObject[follower] = true
+        }
+    });
+    
+    notFollowingMeBack = iAmFollowing.filter(person => !iAmFollowingObject[person])
+
+    return notFollowingMeBack
 }
