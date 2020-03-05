@@ -66,12 +66,11 @@ const puppeteer = require('puppeteer');
         );
         return followersListArr;
       });
-    //   console.log('MY FOLLOWERS: ', myFollowers);
-    //   console.log('I AM FOLLOWING: ', iAmFollowing)
-      let notFollowingBack = notFollowingMeBack(iAmFollowing, myFollowers);
-
-      console.log('Number of people not following me back', notFollowingBack.length)
-      console.log('NOT FOLLOWING ME BACK: ', notFollowingBack)
+      let {notFollowingMeBack, imNotFollowingBack} = getFollowData(iAmFollowing, myFollowers);
+      console.log('Number of people not following me back', notFollowingMeBack.length)
+      console.log('NOT FOLLOWING ME BACK: ', notFollowingMeBack)
+      console.log('Number of people I am not following back', imNotFollowingBack.length)
+      console.log('I AM NOT FOLLOWING BACK', imNotFollowingBack)
   } catch (err) {
       console.error(err.message);
   } finally {
@@ -96,19 +95,22 @@ async function scrollToEnd(page, numberOfItems) {
     }
 }
 
-function notFollowingMeBack(iAmFollowing, myFollowers) {
+function getFollowData(iAmFollowing, myFollowers) {
     let iAmFollowingObject = {};
     let notFollowingMeBack
+    let imNotFollowingBack = []
     iAmFollowing.forEach(following => {
     iAmFollowingObject[following] = false;
     });
     myFollowers.forEach(follower => {
         if(iAmFollowingObject[follower] !== undefined) {
             iAmFollowingObject[follower] = true
+        } else {
+            imNotFollowingBack.push(follower)
         }
     });
     
     notFollowingMeBack = iAmFollowing.filter(person => !iAmFollowingObject[person])
-
-    return notFollowingMeBack
+    
+    return {notFollowingMeBack, imNotFollowingBack}
 }
