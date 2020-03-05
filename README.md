@@ -1,5 +1,4 @@
 # ig-whosFollowing
----
 
 ## Description
 
@@ -18,8 +17,10 @@ npm i
 2. After that create a .env file with the information below
 - be sure to replace the italicized words with your actual authentication information.
 
+```
 IG_ID=*YOUR LOGIN ID*
 IG_PASSWORD=*YOUR PASSWORD*
+```
 
 3. Finally run 
 
