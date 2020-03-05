@@ -34,5 +34,5 @@ npm run start
 
 Currently the wait time is generally hard coded to a certain time. This can be improved on to wait for more follower/following list items to show up.
 
-### Casually written up by [Jonathan Chan](github.com/parmejon)
+### Casually written up by [Jonathan Chan](https://www.github.com/parmejon)
 
