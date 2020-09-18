@@ -31,8 +31,6 @@ const puppeteer = require('puppeteer');
       })
       
       await page.waitFor(5000);
-      // TODO: make IG ID dynamic
-      console.log(process.env.IG_ID)
       let tagLine = `img[alt="${process.env.IG_ID}\'s profile picture"]`;
       await page.evaluate((tagLine) => {
         document
