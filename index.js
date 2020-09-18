@@ -8,20 +8,38 @@ const puppeteer = require('puppeteer');
       const page = await browser.newPage();
       const url = "https://www.instagram.com/accounts/login/?source=auth_switcher";
       await page.goto(url);
-    
     //   Wait some time 
       await page.waitFor(() => document.querySelectorAll('input').length);
     
+    //   Log In
       await page.type('[name=username]', process.env.IG_ID, {delay: 20});
       await page.type('[name=password]', process.env.IG_PASSWORD, {delay: 30});
     
       await page.waitFor(3250);
       await page.click('button[type="submit"]');
+
+    //  Get passed save Info Page
+      await page.waitFor('.cmbtv')
+      await page.waitFor(".sqdOP.yWX7d.y3zKF");  
+      await page.evaluate(() => {
+        document.querySelectorAll(".sqdOP.yWX7d.y3zKF")[0].click()
+      })
+
       await page.waitFor(".aOOlW");
       await page.evaluate(() => {
           document.querySelectorAll(".aOOlW")[1].click()
       })
-      await page.waitFor(1500);
+      
+      await page.waitFor(5000);
+      // TODO: make IG ID dynamic
+      console.log(process.env.IG_ID)
+      let tagLine = `img[alt="${process.env.IG_ID}\'s profile picture"]`;
+      await page.evaluate((tagLine) => {
+        document
+          .querySelectorAll(tagLine)[1]
+          .click();
+      }, tagLine)
+      await page.waitFor(1000);
       await page.click(`a[href='/${process.env.IG_ID}/']`);
       await page.waitFor('.-nal3', {delay: 20});
       let followingCount = await page.evaluate(() => {
@@ -80,9 +98,13 @@ const puppeteer = require('puppeteer');
 
 async function scrollToEnd(page, numberOfItems) {
     let items = 0
+    // sometimes following list says a certain number but smaller count is returned.
+    let lastItemCount
     try {
-        while (items < numberOfItems) {
-            console.log('scrolling')
+        while (items < numberOfItems && items !== lastItemCount) {
+            console.log('scrolling', items, 'items out of', numberOfItems)
+            console.log('items:', items, 'last Item Count:', lastItemCount)
+            lastItemCount = items
             items = await page.evaluate(() => {
                 let scrollable_div = document.getElementsByClassName("PZuss")[0];
                 scrollable_div.scrollIntoView({ block: "end" });
